@@ -30,7 +30,7 @@ $file="";};
 if(!isset($throttle)){
 $throttle="0";};                                                                 
 /**
- * Set $cleanup to 1 for debugging or to leave unpacked files on server;
+ * Set $cleanup to 1 for debugging or to leave unpacked on server;
  * Set to 0 or "" to delete unpacked files in production environment
  */
 $cleanup ="0";
