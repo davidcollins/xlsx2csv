@@ -10,7 +10,7 @@
  * @title      xlsx2csv.php 
  * @author     David Collins <collidavid@gmail.com>
  * @license    http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version    CVS: $Id:$
+ * @version    0.2
  * @link       https://github.com/davidcollins/xlsx2csv
  */
  
@@ -28,9 +28,9 @@ $file="";};
  * In demo $throttle declared in index.php
  */
 if(!isset($throttle)){
-$throttle="0";};                                                                 
+$throttle="";};                                                                 
 /**
- * Set $cleanup to 1 for debugging or to leave unpacked on server;
+ * Set $cleanup to 1 for debugging or to leave unpacked files on server;
  * Set to 0 or "" to delete unpacked files in production environment
  */
 $cleanup ="0";
@@ -44,6 +44,7 @@ $unpack = "0";
  * Assign CSV file name similar to xlsx file;
  */ 
  $newcsvfile  = str_replace(".xlsx",".csv",$file);
+ $newcsvfile = str_replace(" ","-",$newcsvfile);
  $newcsvfile = "csv/$newcsvfile";
  if(!is_dir('bin')) {mkdir("bin", 0770);}; 
  if(!is_dir('csv')) {mkdir("csv", 0777);};
@@ -200,7 +201,7 @@ $doc = new DOMDocument;
 $rowCount="0";
 $doc = new DOMDocument; 
 $sheet = array();  
-
+$nums = array("0","1","2","3","4","5","6","7","8","9");
 while ($z->read() && $z->name !== 'row');
 ob_start();
 
@@ -213,9 +214,19 @@ $result = xmlObjToArr($node);
 
 $cells = $result['children']['c'];
 $rowNo = $result['attributes']['r']; 
+$colAlpha = "A";
 
 foreach($cells as $cell){
+
 if(array_key_exists('v',$cell['children'])){
+
+$cellno = str_replace($nums,"",$cell['attributes']['r']);
+
+for($col = $colAlpha; $col != $cellno; $col++) {
+ $thisrow[]=" ";
+ $colAlpha++; 
+   };
+
   if(array_key_exists('t',$cell['attributes'])&&$cell['attributes']['t']='s'){
     $val = $cell['children']['v'][0]['text'];
     $string = $strings[$val] ;
@@ -226,6 +237,7 @@ if(array_key_exists('v',$cell['children'])){
       }
     }
     else {$thisrow[]="";};
+    $colAlpha++;
   };
 
 $rowLength=count($thisrow);
